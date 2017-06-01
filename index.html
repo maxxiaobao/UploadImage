@@ -3,8 +3,13 @@
 <head>
 	<meta charset="UTF-8">
 	<title>test upload</title>
-	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">  
+	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"> 
+	<script src="vendors/exif-js/exif.js"></script> 
 	<style>
+		#result{
+			width: 200px;
+			margin: 10px auto;	
+		}
 		img{
 			width: 200px;
 			height: 200px;
@@ -26,16 +31,54 @@
 		} 
 		function readFile(){ 
 		    var file = this.files[0]; 
-		    if(!/image\/\w+/.test(file.type)){ 
-		        alert("文件必须为图片！"); 
-		        return false; 
-		    } 
-		    var reader = new FileReader(); 
-		    reader.readAsDataURL(file); 
-		    reader.onload = function(e){ 
-		        result.innerHTML = '<img src="'+this.result+'" alt=""/>' 
-		    } 
+		    console.log(EXIF);
+		    EXIF.getData(file,function() {
+			  var orientation = EXIF.getTag(this,"Orientation");
+			  var can = document.createElement("canvas");
+			  var ctx = can.getContext('2d');
+			  console.log(ctx);
+			  var thisImage = new Image;
+			  thisImage.onload = function() {
+			    can.width  = thisImage.width;
+			    can.height = thisImage.height;
+			    ctx.save();
+			    var width  = can.width;  var styleWidth  = can.style.width;
+			    var height = can.height; var styleHeight = can.style.height;
+			    if (orientation) {
+			      if (orientation > 4) {
+			        can.width  = height; can.style.width  = styleHeight;
+			        can.height = width;  can.style.height = styleWidth;
+			      }
+			      switch (orientation) {
+			      case 2: ctx.translate(width, 0);     ctx.scale(-1,1); break;
+			      case 3: ctx.translate(width,height); ctx.rotate(Math.PI); break;
+			      case 4: ctx.translate(0,height);     ctx.scale(1,-1); break;
+			      case 5: ctx.rotate(0.5 * Math.PI);   ctx.scale(1,-1); break;
+			      case 6: ctx.rotate(0.5 * Math.PI);   ctx.translate(0,-height); break;
+			      case 7: ctx.rotate(0.5 * Math.PI);   ctx.translate(width,-height); ctx.scale(-1,1); break;
+			      case 8: ctx.rotate(-0.5 * Math.PI);  ctx.translate(-width,0); break;
+			      }
+			    }
+
+			    ctx.drawImage(thisImage,0,0);
+			    ctx.restore();
+			    var dataURL = can.toDataURL();
+
+			    // at this point you can save the image away to your back-end using 'dataURL'
+			  }
+
+			  // now trigger the onload function by setting the src to your HTML5 file object (called 'file' here)
+			  thisImage.src = URL.createObjectURL(file);
+			  result.innerHTML = '<img src="'+thisImage.src+'" alt=""/>' 
+			});
+
+		    // var reader = new FileReader(); 
+		    // reader.readAsDataURL(file); 
+		    // reader.onload = function(e){ 
+		    //    result.innerHTML = '<img src="'+this.result+'" alt=""/>' 
+		    // } 
 		} 
+		
 
 	</script>
 </body>
