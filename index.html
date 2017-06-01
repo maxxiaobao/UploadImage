@@ -71,13 +71,14 @@
 			    ctx.drawImage(thisImage,0,0);
 			    ctx.restore();
 			    var dataURL = can.toDataURL();
+			    result.innerHTML = '<img src="'+dataURL+'" alt=""/>'
 			    console.log(dataURL);
 			    // at this point you can save the image away to your back-end using 'dataURL'
 			  }
 
 			  // now trigger the onload function by setting the src to your HTML5 file object (called 'file' here)
 			  thisImage.src = URL.createObjectURL(file);
-			  result.innerHTML = '<img src="'+thisImage.src+'" alt=""/>' 
+			   
 			});
 
 		    // var reader = new FileReader(); 
