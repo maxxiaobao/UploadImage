@@ -8,6 +8,8 @@
 	<style>
 		#result{
 			width: 200px;
+			height: 350px;
+			background-size:200px 350px;
 			margin: 10px auto;	
 		}
 		img{
@@ -63,10 +65,14 @@
 			    ctx.drawImage(thisImage,0,0);
 			    ctx.restore();
 			    var dataURL = can.toDataURL();
-			    console.log(dataURL)
-			    result.innerHTML = '<img src="'+ dataURL +'" alt=""/>' 
+			    result.style.background = "url("+ dataURL +")";
+			    result.style.backgroundSize = "200px 350px";
+			    console.log("lll")
+			    // result.innerHTML = '<img src="'+ dataURL +'" alt=""/>' 
 			    // at this point you can save the image away to your back-end using 'dataURL'
 			  }
+			  thisImage.src = URL.createObjectURL(file);
+			  //result.innerHTML = '<img src="'+ thisImage.src +'" alt=""/>'
 			});
 
 		    // var reader = new FileReader(); 
