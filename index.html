@@ -43,7 +43,7 @@
 			    var width  = can.width;  var styleWidth  = can.style.width;
 			    var height = can.height; var styleHeight = can.style.height;
 			    if (orientation) {
-			    	alert(orientation)
+			      alert(isNaN(orientation))
 			      if (orientation > 4) {
 			        can.width  = height; can.style.width  = styleHeight;
 			        can.height = width;  can.style.height = styleWidth;
@@ -62,7 +62,7 @@
 			    ctx.drawImage(thisImage,0,0);
 			    ctx.restore();
 			    var dataURL = can.toDataURL();
-
+			    console.log(dataURL);
 			    // at this point you can save the image away to your back-end using 'dataURL'
 			  }
 
