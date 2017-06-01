@@ -31,12 +31,10 @@
 		} 
 		function readFile(){ 
 		    var file = this.files[0]; 
-		    console.log(EXIF);
 		    EXIF.getData(file,function() {
 			  var orientation = EXIF.getTag(this,"Orientation");
 			  var can = document.createElement("canvas");
 			  var ctx = can.getContext('2d');
-			  console.log(ctx);
 			  var thisImage = new Image;
 			  thisImage.onload = function() {
 			    can.width  = thisImage.width;
@@ -45,6 +43,7 @@
 			    var width  = can.width;  var styleWidth  = can.style.width;
 			    var height = can.height; var styleHeight = can.style.height;
 			    if (orientation) {
+			    	console.log(orientation);
 			      if (orientation > 4) {
 			        can.width  = height; can.style.width  = styleHeight;
 			        can.height = width;  can.style.height = styleWidth;
