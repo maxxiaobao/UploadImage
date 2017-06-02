@@ -5,11 +5,14 @@
 	<title>test upload</title>
 	<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"> 
 	<script src="vendors/exif-js/exif.js"></script> 
+	<script type="text/javascript" src="bower_components/react/react.min.js" ></script>
+	<script type="text/javascript" src="bower_components/react/react-dom.min.js" ></script>
+	<script type="text/javascript" src="bower_components/babel/browser.min.js" ></script>
+
 	<style>
 		#result{
 			width: 200px;
 			height: 350px;
-			background-size:200px 350px;
 			margin: 10px auto;	
 		}
 		img{
@@ -21,11 +24,68 @@
 <body>
 	上传文件：<input type="file" id="file_input">
 	<div id="result"></div>
-	<script src="formatImg.js"></script>
-	<script>
+	<script type="text/babel">
+		var CorrectAngleImg = React.createClass({
+			getInitialState: function() {
+		    	return {
+		    		dataURL: "",
+		    		style: {
+		    			background: this.state.dataURL
+		    		}
+		    	}
+		  	},
+		  	componentDidMount: function(){
+		  		let self = this;
+		  		getCorrectImgURL(file, function(dateURL){
+					self.setState({dataURL: dateURL});
+		  		})
+		  	},
+			render:function(){
+				var img = this.props.img;
+				this.state.style.backgroundSize = this.props.width + " " + this.props.height;
+				return <div className="resultChild" style={this.state.style}></div>
+			}
+		})
+		function getCorrectImgURL(file, callback){
+			EXIF.getData(file, function() {
+			  var orientation = EXIF.getTag(this,"Orientation");
+			  var can = document.createElement("canvas");
+			  var ctx = can.getContext('2d');
+			  var thisImage = new Image;
+			  thisImage.onload = function() {
+			    can.width  = thisImage.width;
+			    can.height = thisImage.height;
+			    ctx.save();
+			    var width  = can.width;  var styleWidth  = can.style.width;
+			    var height = can.height; var styleHeight = can.style.height;
+			    if (orientation) {
+			      if (orientation > 4) {
+			        can.width  = height; can.style.width  = styleHeight;
+			        can.height = width;  can.style.height = styleWidth;
+			      }
+			      switch (orientation) {
+				      case 2: ctx.translate(width, 0);     ctx.scale(-1,1); break;
+				      case 3: ctx.translate(width,height); ctx.rotate(Math.PI); break;
+				      case 4: ctx.translate(0,height);     ctx.scale(1,-1); break;
+				      case 5: ctx.rotate(0.5 * Math.PI);   ctx.scale(1,-1); break;
+				      case 6: ctx.rotate(0.5 * Math.PI);   ctx.translate(0,-height); break;
+				      case 7: ctx.rotate(0.5 * Math.PI);   ctx.translate(width,-height); ctx.scale(-1,1); break;
+				      case 8: ctx.rotate(-0.5 * Math.PI);  ctx.translate(-width,0); break;
+			      }
+			    }
+			    ctx.drawImage(thisImage,0,0);
+			    ctx.restore();
+			    return can.toDataURL();
+			    // if (callback) {
+			    // 	callback(can.toDataURL())
+			    // }
+			    // at this point you can save the image away to your back-end using 'dataURL'
+			  }
+			  thisImage.src = URL.createObjectURL(file);
+			});
+		}
 		var result = document.getElementById("result"); 
 		var input = document.getElementById("file_input"); 
- 
 		if(typeof FileReader==='undefined'){ 
 		    result.innerHTML = "抱歉，你的浏览器不支持 FileReader"; 
 		    input.setAttribute('disabled','disabled'); 
@@ -34,16 +94,14 @@
 		} 
 		function readFile(){ 
 		    var file = this.files[0]; 
-		    getFormatImgURL(file, function(dataURL) {
-			    result.style.background = "url("+ dataURL +")";
-				result.style.backgroundSize = "200px 350px";
-		    });
-
-		    // var reader = new FileReader(); 
-		    // reader.readAsDataURL(file); 
-		    // reader.onload = function(e){ 
-		    //    result.innerHTML = '<img src="'+this.result+'" alt=""/>' 
-		    // } 
+		    ReactDOM.render(
+  				<CorrectAngleImg img={file} width="200px" height="350px" />,
+  				document.getElementById('result')
+			);
+		  //   getFormatImgURL(file, function(dataURL) {
+			 //    result.style.background = "url("+ dataURL +")";
+				// result.style.backgroundSize = "200px 350px";
+		  //   });
 		} 
 		
 

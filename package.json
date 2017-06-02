@@ -1,0 +1,19 @@
+{
+  "name": "correct-angle-img",
+  "version": "1.0.0",
+  "description": "make the img angle correct",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxxiaobao/UploadImage.git"
+  },
+  "author": "maxxiaobao",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maxxiaobao/UploadImage/issues"
+  },
+  "homepage": "https://github.com/maxxiaobao/UploadImage#readme"
+}

@@ -1,3 +1,22 @@
+var CorrectAngleImg = React.createClass({
+	getInitialState: function() {
+    	return {
+    		style: {
+    			background: dataURL
+    		},
+    		dataURL: ""
+    	}
+  	},
+	render:function(){
+		var img = this.props.img;
+		this.state.dataURL = getCorrectImgURL(file);
+		this.state.style.width = this.props.width;
+		this.state.style.height = this.props.height;
+		return <div className="resultChild" style={this.state.style}></div>
+	}
+})
+
+
 function getFormatImgURL(file, callback){
 	EXIF.getData(file, function() {
 	  var orientation = EXIF.getTag(this,"Orientation");
@@ -27,10 +46,10 @@ function getFormatImgURL(file, callback){
 	    }
 	    ctx.drawImage(thisImage,0,0);
 	    ctx.restore();
-	    var dataURL = can.toDataURL();
-	    if (callback) {
-	    	callback(dataURL)
-	    }
+	    return can.toDataURL();
+	    // if (callback) {
+	    // 	callback(can.toDataURL())
+	    // }
 	    // at this point you can save the image away to your back-end using 'dataURL'
 	  }
 	  thisImage.src = URL.createObjectURL(file);
